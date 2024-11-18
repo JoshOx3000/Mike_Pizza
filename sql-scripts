@@ -1,1 +1,5 @@
+-- Created Mike_Pizza_DB
+CREATE DATABASE Mike_Pizza_DB;
+
+use mike_pizza_db;
 
