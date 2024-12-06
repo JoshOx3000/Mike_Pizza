@@ -1,0 +1,33 @@
+
+-- Submit as team effort via zoom BY Edmond  Credit github Account: Ecar0301,  Mina  Credit github Account: Aallen747, Josh Oxner CREDIT to github Account: JoshOx3000
+-- Procedure GetCustomerDetails 
+CREATE PROCEDURE GetCustomerDetails
+    @CustomerID INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        c.customer_id,
+        c.name AS CustomerName,
+        c.email,
+        c.phone_number,
+        a.street,
+        a.city,
+        a.state,
+        a.zip_code
+    FROM 
+        Dim_Customers c
+    LEFT JOIN 
+        Dim_Addresses a ON c.customer_id = a.customer_id
+    WHERE 
+        c.customer_id = @CustomerID;
+END;
+GO
+
+
+
+-- exec store procedure, test if store procedure works properly
+EXEC GetCustomerDetails @CustomerID = 1;
+
+EXEC GetCustomerDetails @CustomerID = 2;
