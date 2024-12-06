@@ -212,7 +212,7 @@ VALUES
 (9, 'Buffalo Chicken', 'Pizza dough, Buffalo sauce, Grilled chicken, Blue cheese, Mozzarella, Chives'),
 (10, 'Seafood Delight', 'Pizza dough, White sauce, Shrimp, Crab meat, Mozzarella, Garlic, Parsley'),
 (11, 'Mushroom Truffle', 'Pizza dough, Truffle oil, Mixed mushrooms, Mozzarella, Fontina cheese, Thyme'),
-(12, 'Spicy Sausage', 'Pizza dough, Tomato sauce, Spicy Italian sausage, Jalapeños, Mozzarella, Red onions'),
+(12, 'Spicy Sausage', 'Pizza dough, Tomato sauce, Spicy Italian sausage, JalapeÃ±os, Mozzarella, Red onions'),
 (13, 'Prosciutto and Arugula', 'Pizza dough, Olive oil, Mozzarella, Prosciutto, Fresh arugula, Parmesan shavings'),
 (14, 'Breakfast Pizza', 'Pizza dough, Cream sauce, Scrambled eggs, Bacon, Cheddar cheese, Chives'),
 (15, 'Spinach and Ricotta', 'Pizza dough, Olive oil, Fresh spinach, Ricotta cheese, Garlic, Pine nuts'),
@@ -262,7 +262,7 @@ VALUES
     (20, 'Feta Cheese', 'Dodoni Dairy'),
     (21, 'Shrimp', 'Gulf Seafood Distributors'),
     (22, 'Truffle Oil', 'Urbani Truffles'),
-    (23, 'Jalapeños', 'Local Farm Produce'),
+    (23, 'JalapeÃ±os', 'Local Farm Produce'),
     (24, 'Prosciutto', 'Beretta Farms'),
     (25, 'Ricotta Cheese', 'Galbani Cheese');
 
@@ -421,4 +421,36 @@ VALUES
 	;
 
 
+-- Store Procedures 
+-- Submit as team effort via zoom BY Edmond  Credit github Account: Ecar0301,  Mina  Credit github Account: Aallen747, Josh Oxner CREDIT to github Account: JoshOx3000
+-- Procedure GetCustomerDetails 
+CREATE PROCEDURE GetCustomerDetails
+    @CustomerID INT
+AS
+BEGIN
+    SET NOCOUNT ON;
 
+    SELECT 
+        c.customer_id,
+        c.name AS CustomerName,
+        c.email,
+        c.phone_number,
+        a.street,
+        a.city,
+        a.state,
+        a.zip_code
+    FROM 
+        Dim_Customers c
+    LEFT JOIN 
+        Dim_Addresses a ON c.customer_id = a.customer_id
+    WHERE 
+        c.customer_id = @CustomerID;
+END;
+GO
+
+
+
+-- exec store procedure, test if store procedure works properly
+EXEC GetCustomerDetails @CustomerID = 1;
+
+EXEC GetCustomerDetails @CustomerID = 2;
