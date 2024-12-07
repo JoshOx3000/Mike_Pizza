@@ -454,3 +454,64 @@ GO
 EXEC GetCustomerDetails @CustomerID = 1;
 
 EXEC GetCustomerDetails @CustomerID = 2;
+
+
+-- Create a table to log low inventory alerts
+CREATE TABLE Low_Inventory_Log (
+    log_id INT IDENTITY(1,1) PRIMARY KEY, -- Auto-incrementing ID
+    inventory_id INT NOT NULL,
+    ingredient_id INT NOT NULL,
+    quantity_in_stock INT NOT NULL,
+    alert_time DATETIME DEFAULT GETDATE(), -- Log the alert timestamp
+    FOREIGN KEY (inventory_id) REFERENCES Dim_Inventory(inventory_id),
+	FOREIGN KEY (ingredient_id) REFERENCES Ingredients(ingredient_id)
+);
+
+
+-- added triggers to the Mike_Pizza_DB
+-- Trigger to log low inventory on INSERT
+CREATE TRIGGER trg_low_inventory_insert
+ON Dim_Inventory
+AFTER INSERT
+AS
+BEGIN
+    INSERT INTO Low_Inventory_Log (inventory_id, ingredient_id, quantity_in_stock)
+    SELECT 
+        i.inventory_id,
+        i.ingredient_id,
+        i.quantity_in_stock
+    FROM INSERTED i
+    WHERE i.quantity_in_stock < 20; -- Define low inventory threshold
+END;
+
+-- Trigger to log low inventory on UPDATE
+CREATE TRIGGER trg_low_inventory_update
+ON Dim_Inventory
+AFTER UPDATE
+AS
+BEGIN
+    INSERT INTO Low_Inventory_Log (inventory_id, ingredient_id, quantity_in_stock)
+    SELECT 
+        u.inventory_id,
+        u.ingredient_id,
+        u.quantity_in_stock
+    FROM INSERTED u
+    WHERE u.quantity_in_stock < 20; -- Define low inventory threshold
+END
+
+-- Test INSERT Trigger
+INSERT INTO Dim_Inventory (inventory_id, ingredient_id, quantity_in_stock)
+VALUES (26, 1, 15);
+
+-- Test UPDATE Trigger
+UPDATE Dim_Inventory
+SET quantity_in_stock = 10
+WHERE inventory_id = 1; -- Logs to Low_Inventory_Log because quantity is now less
+
+
+-- Check the log table to confirm
+SELECT *
+FROM Low_Inventory_Log
+;
+
+--work sucessfully
